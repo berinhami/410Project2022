@@ -1,0 +1,289 @@
+openapi: 3.0.3
+info:
+  title: Sudoku API
+  version: v1
+paths:
+  /accounts:
+    x-controller: accounts
+    post:
+      x-opperation: createAccount
+      tags:
+        - Accounts
+      summary: Create an account
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - firstName
+                - lastName
+                - password
+              properties:
+                username:
+                  type: string
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                password: 
+                  type: string
+                  format: password
+            example:
+              username: bingbong22
+              firstName: bing
+              lastName: bong
+              password: goodPassword
+      responses: 
+        201:
+          description: Account Created
+        400:
+          description: Invalid Request
+        409:
+          description: Account Already Exists
+  /accounts/{userid}:
+    parameters:
+      - $ref: '#/components/parameters/PathUserId'
+    get:
+      tags:
+        - Accounts
+      summary: Gets an account
+      responses:
+        200:
+          description: Got Account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        401:
+          description: Not authenticated
+        403:
+          description: Also not authenticated
+    delete:
+      x-controller: accounts
+      x-opperation: deleteAccount
+      tags:
+        - Accounts
+      summary: Delete an account
+      responses:
+        204:
+          description: Account deleted
+        401:
+          description: Not authenticated
+        403:
+          description: Also not authenticated
+  /accounts/{userid}/login:
+    parameters:
+      - $ref: '#/components/parameters/PathUserId'
+    put:
+      x-controller: accounts
+      x-opperation: loggsIn
+      tags: 
+        - Accounts
+      summary: loggs a user in
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  format: username
+                password: 
+                  type: string
+                  format: password
+            example:
+              username: bingbong22
+              password: goodPassword
+      responses: 
+        200:
+          description: logged in
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        400:
+          description: invalid request
+        403:
+          description: access denied
+  /accounts/{userid}/logout:
+    parameters:
+      - $ref: '#/components/parameters/PathUserId'
+    put:
+      tags: 
+        - Accounts
+      summary: loggs a user out
+      responses: 
+        200:
+          description: logged out
+        403:
+          description: access denied
+  /puzzles:
+    post:
+      tags:
+        - Puzzles
+      summary: Create a Puzzle
+      parameters:
+        - name: completed
+          in: query
+          schema:
+            type: boolean
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              required:
+                - puzzleDifficulty
+                - originalNumbers
+              properties:
+                puzzleDifficulty:
+                  type: integer
+                originalNumbers:
+                  type: array
+                  items:
+                    type: integer
+            example:
+              puzzleDifficulty: 1
+              originalNumbers: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+      responses: 
+        201:
+          description: Puzzle Created
+        400:
+          description: Invalid request.
+        401:
+          description: Not authenticated.
+  /puzzles/{puzzleid}:
+    parameters:
+      - $ref: '#/components/parameters/PathPuzzleId'
+    delete:
+      tags:
+        - Puzzles
+      summary: Delete a puzzle
+      responses:
+        204:
+          description: puzzle deleted
+        401:
+          description: not authenticate
+        403:
+          description: access denied
+        404:
+          description: puzzle not found
+    get:
+      tags:
+        - Puzzels
+      summary: Get a puzzle
+      responses:
+        200:
+          description: got the puzzle
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Puzzle'
+        401:
+          description: not authenticate
+        403:
+          description: access denied
+        404:
+          description: puzzle not found
+  /puzzles/{puzzleid}/cells/{cellid}:
+    parameters:
+      - $ref: '#/components/parameters/PathPuzzleId'
+      - $ref: '#/components/parameters/PathCellId'
+    put:
+      tags:
+        - Numbers
+      summary: Number is changed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userEnteredNumbers
+              properties:
+                number:
+                  type: integer
+                  format: number
+            example:
+              userEnteredNumbers: 4
+      responses: 
+        200:
+          description: number changed
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Puzzle'
+        400:
+          description: invalid request
+        401:
+          description: not authenticated
+    get:
+      tags:
+        - Numbers
+      summary: Get a number
+      responses:
+        200:
+          description: got number
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Puzzle'
+        400:
+          description: invalid request
+        401:
+          description: not authenticated
+        404:
+          description: not found
+components:
+  parameters:
+    PathUserId:
+      name: userid
+      in: path
+      required: true
+      schema:
+        type: string
+    PathPuzzleId:
+      name: puzzleid
+      in: path
+      required: true
+      schema:
+        type: string
+    PathCellId:
+      name: cellid
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    Account:
+      type: object
+      properties: 
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+    Puzzle:
+      type: object
+      properties:
+        puzzleDifficulty:
+          type: integer
+        originalNumbers:
+          type: array
+          items:
+            type: integer
+        
