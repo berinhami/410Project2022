@@ -6,7 +6,7 @@ paths:
   /accounts:
     x-controller: accounts
     post:
-      x-opperation: createAccount
+      x-operation: createAccount
       tags:
         - Accounts
       summary: Create an account
@@ -18,23 +18,23 @@ paths:
               type: object
               required:
                 - username
-                - firstName
-                - lastName
+                - firstname
+                - lastname
                 - password
               properties:
                 username:
                   type: string
-                firstName:
+                firstname:
                   type: string
-                lastName:
+                lastname:
                   type: string
                 password: 
                   type: string
                   format: password
             example:
               username: bingbong22
-              firstName: bing
-              lastName: bong
+              firstname: bing
+              lastname: bong
               password: goodPassword
       responses: 
         201:
@@ -44,9 +44,11 @@ paths:
         409:
           description: Account Already Exists
   /accounts/{userid}:
+    x-controller: accounts
     parameters:
       - $ref: '#/components/parameters/PathUserId'
     get:
+      x-operation: getAccount
       tags:
         - Accounts
       summary: Gets an account
@@ -61,9 +63,44 @@ paths:
           description: Not authenticated
         403:
           description: Also not authenticated
+    patch:
+      x-operation: updateAccount
+      tags:
+        - Accounts
+      summary: Update an account
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                firstname:
+                  type: string
+                lastname:
+                  type: string
+                password:
+                  type: string
+                  format: password
+                  minLength: 1
+      responses:
+        200:
+          description: Account updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        400:
+          description: Invalid request
+        401:
+          description: Not authenticated
+        403:
+          description: Access denied
+        404:
+          description: Not found
     delete:
-      x-controller: accounts
-      x-opperation: deleteAccount
+      x-operation: deleteAccount
       tags:
         - Accounts
       summary: Delete an account
@@ -75,11 +112,11 @@ paths:
         403:
           description: Also not authenticated
   /accounts/{userid}/login:
+    x-controller: accounts
     parameters:
       - $ref: '#/components/parameters/PathUserId'
     put:
-      x-controller: accounts
-      x-opperation: loggsIn
+      x-operation: login
       tags: 
         - Accounts
       summary: loggs a user in
@@ -114,9 +151,11 @@ paths:
         403:
           description: access denied
   /accounts/{userid}/logout:
+    x-controller: accounts
     parameters:
       - $ref: '#/components/parameters/PathUserId'
     put:
+      x-operation: logout
       tags: 
         - Accounts
       summary: loggs a user out
@@ -126,7 +165,9 @@ paths:
         403:
           description: access denied
   /puzzles:
+    x-controller: puzzles
     post:
+      x-operation: createPuzzle
       tags:
         - Puzzles
       summary: Create a Puzzle
@@ -162,9 +203,11 @@ paths:
         401:
           description: Not authenticated.
   /puzzles/{puzzleid}:
+    x-controller: puzzles
     parameters:
       - $ref: '#/components/parameters/PathPuzzleId'
     delete:
+      x-operation: deletePuzzle
       tags:
         - Puzzles
       summary: Delete a puzzle
@@ -178,6 +221,7 @@ paths:
         404:
           description: puzzle not found
     get:
+      x-operation: getPuzzle
       tags:
         - Puzzels
       summary: Get a puzzle
@@ -195,10 +239,12 @@ paths:
         404:
           description: puzzle not found
   /puzzles/{puzzleid}/cells/{cellid}:
+    x-controller: puzzles
     parameters:
       - $ref: '#/components/parameters/PathPuzzleId'
       - $ref: '#/components/parameters/PathCellId'
     put:
+      x-operation: updatePuzzle
       tags:
         - Numbers
       summary: Number is changed
@@ -228,6 +274,7 @@ paths:
         401:
           description: not authenticated
     get:
+      x-operation: getNumber
       tags:
         - Numbers
       summary: Get a number
@@ -270,9 +317,9 @@ components:
       properties: 
         username:
           type: string
-        firstName:
+        firstname:
           type: string
-        lastName:
+        lastname:
           type: string
         password:
           type: string

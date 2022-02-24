@@ -1,15 +1,24 @@
---  Define accounts table
-/*
-CREATE TABLE "accounts" (
-  "userId" character(32) NOT NULL,
-  "firstName" character varying(40) NOT NULL,
-  "lastName" character varying(40) NOT NULL,
-  "username" character varying(40) NOT NULL,
-  "password" character varying(80) NOT NULL,
-  PRIMARY KEY ("userId")
+CREATE TABLE "accounts"(
+  "userid" character(40) NOT NULL,
+  "username" character(40) NOT NULL,
+  "firstname" character(40) NOT NULL,
+  "lastname" character(40) NOT NULL,
+  "password" character(80) NOT NULL,
+  PRIMARY KEY ("userid")
 );
-CREATE INDEX "accounts_username" ON "accounts" ("username");
 
--- Replicate database into a test database
-CREATE DATABASE test WITH TEMPLATE <YOUR_DATABASE_NAME>;
-*/
+ALTER TABLE "accounts"
+ADD CONSTRAINT "accounts_username" UNIQUE ("username");
+
+CREATE TABLE "puzzles" (
+  "puzzleId" character(40) NOT NULL,
+  "userid" character(40) NOT NULL,
+  "puzzleDifficulty" integer NOT NULL,
+  "originalNumbers" json NOT NULL,
+  "userEnteredNumbers" json NOT NULL,
+  "completed" boolean NOT NULL,
+  PRIMARY KEY ("puzzleId")
+);
+
+CREATE INDEX "puzzles_userid" ON "puzzles" ("userid");
+CREATE INDEX "puzzles_completed" ON "puzzles" ("userid", "completed");

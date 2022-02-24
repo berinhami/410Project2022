@@ -81,3 +81,4 @@ export default {
   name: 'IndexPage'
 }
 </script>
+<!--vue dev tools

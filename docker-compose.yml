@@ -12,13 +12,13 @@ services:
     build:
       context: ./docker/db
     restart: always
-#    env_file: ./.env
+    env_file: ./.env
     environment:
-      POSTGRES_DB: Sudoku2022
-      POSTGRES_USER: berinhami
-      POSTGRES_PASSWORD: postgres2
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - 5432:5432
+      - ${POSTGRES_PORT}:5432
 
       # docker build -t Mysudoku
       # docker run --rm -t -p 5000:3000 mysudoku
