@@ -27,6 +27,15 @@ exports.getAccount = async function (client, userid) {
     return rows
 }
 
+exports.getAccountByUsername = async function (client, username) {
+    const { rows } = await client.query({
+        name: 'get-account-by-username',
+        text: 'SELECT * FROM accounts WHERE username=$1',
+        values: [username]
+    })
+    return rows[0]
+}
+
 exports.updateAccount = async function (client, userid, data) {
     // create dynamic query based on inputs
     const { username, firstname, lastname, password } = data
@@ -49,7 +58,9 @@ exports.updateAccount = async function (client, userid, data) {
     }
 
     if (password !== undefined) {
-        values.push(password)
+        const salt = await bcrypt.genSalt(10)
+        let pasHash = await bcrypt.hash(password, salt)
+        values.push(pasHash)
         sets.push('password=$' + values.length)
     }
 
@@ -72,4 +83,9 @@ exports.deleteAccount = async function (client, userid) {
         values: [userid]
     })
     return rowCount > 0
+}
+
+async function encryptPassword (password) {
+    const salt = await bcrypt.genSalt(10)
+    return await bcrypt.hash(password, salt)
 }

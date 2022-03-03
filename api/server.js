@@ -5,8 +5,20 @@ const express = require('express')
 const { Pool } = require('pg')
 const path = require('path')
 const Accounts = require('./controllers/accounts')
+const Authentication = require('./controllers/authentication')
 const Puzzles = require('./controllers/puzzles')
 
+const bcrypt = require('bcryptjs')
+const cookieParser = require('cookie-parser')
+const LocalStrategy = require('passport-local').Strategy
+const passport = require('passport');
+const session = require('express-session');
+
+const DatabaseAccounts = require('./database/account')
+const ConnectPgSimple = require('connect-pg-simple')(session)
+
+
+//setting up the databases connection
 const pool = new Pool({
   host: process.env.POSTGRES_HOST,
   database: process.env.POSTGRES_DB,
@@ -25,6 +37,39 @@ if (err) {
 }
 })
 
+// set up passport local strategy
+passport.use(new LocalStrategy((username, password, done) => {
+	DatabaseAccounts.getAccountByUsername(pool, username)
+		.then(async account => {
+			// if no account with the username was found then authentication failed
+			if (account === undefined) {
+				done(null, false)
+			} else {
+				// compare encrypted password
+				const match = await bcrypt.compare(password, account.password)
+				if (match) {
+					// passwords matched, so create the user object
+					done(null, { id: account.userid, username: account.username, firstname: account.firstname, lastname: account.lastname })
+				} else {
+					const hash = await bcrypt.hash(password, 10)
+					const m2 = await bcrypt.compare(password, hash)
+
+					// passwords did not match
+					done(null, false)
+				}
+			}
+		})
+		.catch(e => done(e, null))
+}))
+
+passport.serializeUser((user, done) => {
+	done(null, JSON.stringify(user))
+})
+
+passport.deserializeUser((id, done) => {
+	done(null, JSON.parse(id))
+})
+
 const app = express()
 
 // Any paths defined in your openapi.yml will validate and parse the request
@@ -33,18 +78,10 @@ const openapiPath = path.resolve(__dirname, '../openapi.yml')
 const enforcerPromise = Enforcer(openapiPath, { hideWarnings: true })
 const enforcerMiddleware = EnforcerMiddleware(enforcerPromise)
 
-
-//body parseers
 app.use(express.json())
 app.use(express.text())
 
-//cookies and pasport
-
-// app.use((req, res, next) => {
-//   console.log(req.method + ' ' + req.path, req.headers, req.body)
-//   next()
-// })
-
+// validate and parse request
 app.use(enforcerMiddleware.init({ baseUrl: '/api' }))
 
 // Catch errors
@@ -52,6 +89,57 @@ enforcerMiddleware.on('error', err => {
   console.error(err)
   process.exit(1)
 }) 
+
+
+app.use(session({
+	store: new ConnectPgSimple({
+		pool
+	}),
+	secret: process.env.SESSION_SECRET,
+	resave: false,
+	saveUninitialized: true,
+	cookie: {
+		maxAge: 2592000000 // 30 days, written in milliseconds
+	}
+}))
+app.use(passport.initialize())
+app.use(passport.session())
+
+app.use((req, res, next) => {
+	const { operation } = req.enforcer
+	if (operation.security !== undefined) {
+		const sessionIsRequired = operation.security.find(obj => obj.cookieAuth !== undefined)
+		if (sessionIsRequired && !req.user) {
+			res.sendStatus(401)
+			return
+		}
+	}
+	next()
+})
+
+// // tell passport to use a local strategy and tell it how to validate a username and password
+// passport.use(new LocalStrategy(function(username, password, done) {
+//   if (username && password === 'pass') return done(null, { username: username });
+//   return done(null, false);
+// }));
+
+// // tell passport how to turn a user into serialized data that will be stored with the session
+// passport.serializeUser(function(user, done) {
+//   done(null, user.username);
+// });
+
+// // tell passport how to go from the serialized data back to the user
+// passport.deserializeUser(function(id, done) {
+//   done(null, { username: id });
+// });
+
+
+//cookies and pasport
+
+// app.use((req, res, next) => {
+//   console.log(req.method + ' ' + req.path, req.headers, req.body)
+//   next()
+// })
 
 //for cookies
 // app.use((req, res, next) => {
@@ -71,6 +159,7 @@ enforcerMiddleware.on('error', err => {
 
 app.use(enforcerMiddleware.route({
 	accounts: Accounts(pool),
+  	authentication: Authentication(passport),
 	puzzles: Puzzles(pool)
 }))
 
