@@ -4,6 +4,12 @@ export const state = () => {
     }
 }
 
+// export const getters = {
+//     sudokuPuzzles (state){
+//         return state.sudokuPuzzles.filter(sudoku.done)
+//     }
+// }
+
 export const mutations = {
     setUser (state, user) {
         state.user = user
@@ -12,6 +18,7 @@ export const mutations = {
 
 export const actions = {
     async login ({ commit, state }, { username, password }) {
+      //  console.log('this is working')
         const res = await this.$axios.put('/api/authentication/login', {
             username,
             password

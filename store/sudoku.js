@@ -9,26 +9,23 @@ export const mutations = {
             done: false
         })
     },
-    remove(state, { todo }) {
-        state.list.splice(state.list.indexOf(todo), 1)
+    remove(state, { sudoku }) {
+        state.list.splice(state.list.indexOf(sudoku), 1)
     },
-    toggle(state, todo) {
-        todo.done = !todo.done
+    toggle(state, sudoku) {
+        sudoku.done = !sudoku.done
     }
 }
 
 export const actions = {
-    getList ({ commit, state }) {
+    getPuzzle ({ commit, state }) {
         console.log('Making ajax call')
         const list = [
-            { done: false, text: 'Item 1'},
-            { done: false, text: 'Item 2'},
-            { done: false, text: 'Item 3'}
+            { done: false, text: '0, 1, 2, 3...'}
         ]
         list.forEach(item => {
             commit('add', item)
         })
-        // commit('remove', )
 
     }
 }
