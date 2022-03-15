@@ -1,8 +1,8 @@
 <template>
     <div>
         <v-row justify="center" align="center">
-            <v-col cols="12" sm="8" md="6">
-                <v-card elevation="5">
+            <v-col cols="12" sm="8" md="5">
+                <v-card elevation="8" color="#1B191B">
                     <v-card-title justify="center">
                         <h1>Login</h1>
                     </v-card-title>
@@ -10,17 +10,10 @@
                         <v-text-field v-model="loginForm.username" lable="username" required />
                         <v-text-field v-model="loginForm.password" type="password" lable="password" required />
                         <v-btn @click="login()">Login</v-btn>
-                        <v-btn @click="logout()">LogOut</v-btn>
                     </v-card-text>
                 </v-card>
             </v-col>
         </v-row>
-        <div v-if="user == null">
-          Logged out!
-        </div>
-        <div v-if="user !== null">
-          Logged in as {{user}}
-        </div>
     </div>
 </template>
 
