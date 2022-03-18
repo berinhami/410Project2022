@@ -170,11 +170,6 @@ paths:
       security:
         - cookieAuth: []
       summary: Create a Puzzle
-      parameters:
-        - name: completed
-          in: query
-          schema:
-            type: boolean
       requestBody:
         required: true
         content: 
@@ -182,18 +177,28 @@ paths:
             schema:
               type: object
               required:
-                - puzzleDifficulty
-                - originalNumbers
+                - puzzledifficulty
+                - originalnumbers
+                - userenterednumbers
+                - completed
               properties:
-                puzzleDifficulty:
+                puzzledifficulty:
                   type: integer
-                originalNumbers:
+                originalnumbers:
                   type: array
                   items:
                     type: integer
+                userenterednumbers:
+                  type: array
+                  items:
+                    type: integer
+                completed:
+                  type: boolean
             example:
-              puzzleDifficulty: 1
-              originalNumbers: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+              puzzledifficulty: 1
+              originalnumbers: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+              userenterednumbers: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+              completed: false
       responses: 
         201:
           description: Puzzle Created
@@ -205,6 +210,41 @@ paths:
     x-controller: puzzles
     parameters:
       - $ref: '#/components/parameters/PathPuzzleId'
+    patch:
+      x-operation: updateIt
+      tags:
+        - Puzzles
+      security:
+        - cookieAuth: []
+      summary:
+        Updates a puzzle
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userenterednumbers:
+                  type: array
+                  items:
+                    type: integer
+                completed:
+                  type: boolean 
+      responses:
+        200:
+          description: puzzle updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Puzzle'
+        400:
+          description: Invalid request
+        401:
+          description: Not authenticated
+        403:
+          description: Access denied
+        404:
+          description: Not found
     delete:
       x-operation: deletePuzzle
       tags:
@@ -339,10 +379,16 @@ components:
     Puzzle:
       type: object
       properties:
-        puzzleDifficulty:
+        puzzledifficulty:
           type: integer
-        originalNumbers:
+        originalnumbers:
           type: array
           items:
             type: integer
+        userenterednumbers:
+          type: array
+          items:
+            type: integer
+        completed:
+          type: boolean 
         

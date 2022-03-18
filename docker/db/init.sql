@@ -27,13 +27,13 @@ CREATE INDEX "IDX_session_expire" ON "session" ("expire");
 --Puzzles
 
 CREATE TABLE "puzzles" (
-  "puzzleId" varchar(40) NOT NULL,
+  "puzzleid" varchar(40) NOT NULL,
   "userid" varchar(40) NOT NULL,
-  "puzzleDifficulty" integer NOT NULL,
-  "originalNumbers" json NOT NULL,
-  "userEnteredNumbers" json NOT NULL,
+  "puzzledifficulty" integer NOT NULL,
+  "originalnumbers" text NOT NULL,
+  "userenterednumbers" text NOT NULL,
   "completed" boolean NOT NULL,
-  PRIMARY KEY ("puzzleId")
+  PRIMARY KEY ("puzzleid")
 );
 
 CREATE INDEX "puzzles_userid" ON "puzzles" ("userid");
