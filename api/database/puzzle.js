@@ -18,11 +18,11 @@ exports.createPuzzle = async function (client, userid, puzzledifficulty, origina
     return rowCount > 0 ? puzzleid : undefined
 }
 
-exports.getPuzzle = async function (client, puzzleid) {
+exports.getPuzzle = async function (client, userid) {
     const { rows } = await client.query({
         name: 'get-puzzle-by-id',
-        text: 'SELECT * FROM puzzles WHERE puzzleid=$1',
-        values: [puzzleid]
+        text: 'SELECT * FROM puzzles WHERE userid=$1',
+        values: [userid]
     })
     const myRows = rows[0]
     if (myRows !== undefined){
@@ -32,16 +32,16 @@ exports.getPuzzle = async function (client, puzzleid) {
     return myRows
 }
 
-exports.deletePuzzle = async function (client, puzzleid) {
+exports.deletePuzzle = async function (client, userid) {
     const { rowCount } = client.query({
         name: 'delete-puzzle',
-        text: 'DELETE FROM puzzles WHERE puzzleid=$1',
-        values: [puzzleid]
+        text: 'DELETE FROM puzzles WHERE userid=$1',
+        values: [userid]
     })
     return rowCount > 0
 }
 
-exports.updatePuzzle = async function (client, puzzleid, data){
+exports.updatePuzzle = async function (client, userid, data){
     const { puzzledifficulty, originalnumbers, userenterednumbers, completed} = data
     const values = []
     const sets = []
@@ -64,15 +64,15 @@ exports.updatePuzzle = async function (client, puzzleid, data){
     // if no properties were passed in then there is nothing to update
     if (values.length === 0) return await exports.getAccount(client, userid)
 
-    values.push(puzzleid)
+    values.push(userid)
     const { rows } = client.query({
         name: 'update-puzzle',
-        text: 'UPDATE puzzles SET ' + sets.join(', ') + ' WHERE puzzleid=$' + (values.length) + ' RETURNING *',
+        text: 'UPDATE puzzles SET ' + sets.join(', ') + ' WHERE userid=$' + (values.length) + ' RETURNING *',
         values: [
             JSON.stringify(originalnumbers),
             JSON.stringify(userenterednumbers),
             completed,
-            puzzleid
+            userid
         ]
     })
     return rows

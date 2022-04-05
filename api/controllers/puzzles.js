@@ -19,9 +19,10 @@ module.exports = function (pool) {
         },
 
         async getPuzzle (req, res) {
-            const { puzzleid } = req.enforcer.params
+            //const { userid } = req.enforcer.params
+            const userid = req.user.id
             const client = await pool.connect()
-            let puzzle = await puzzles.getPuzzle(client, puzzleid)
+            let puzzle = await puzzles.getPuzzle(client, userid)
             if (puzzle === undefined) {
                 res.enforcer.status(404).send()
             } else {
@@ -36,40 +37,14 @@ module.exports = function (pool) {
         },
         
         async updatePuzzle (req, res) {
-            // const data = req.enforcer.body
-            // const { puzzleid } = req.enforcer.params
-
-            // const client = await pool.connect()
-			// try {
-			// 	await client.query('BEGIN')
-			// 	let puzzle = await puzzles.getPuzzle(client, puzzleid)
-			// 	if (puzzle === undefined) {
-			// 		res.enforcer.status(404).send()
-			// 	} else if (puzzle.puzzleid !== req.puzzle.id) {
-			// 		res.enforcer.status(403).send()
-			// 	} else {
-			// 		await puzzles.updateAccount(client, req.puzzle.id, data)
-			// 		res.enforcer.status(200).send({
-            //             puzzledifficulty: data.puzzledifficulty,
-            //             originalnumbers: data.originalnumbers,
-            //             userenterednumbers: data.userenterednumbers,
-            //             completed: data.completed
-			// 		})
-			// 	}
-			// 	await client.query('COMMIT')
-			// } catch (e) {
-			// 	await client.query('ROLLBACK')
-			// 	throw e
-			// } finally {
-			// 	client.release()
-			// }
 
         },
         
         async deletePuzzle (req, res) {
-            const { puzzleid } = req.enforcer.params
+           // const { userid } = req.enforcer.params
+            const userid = req.user.id
             const client = await pool.connect()
-            let puzzle = await puzzles.deletePuzzle(client, puzzleid)
+            let puzzle = await puzzles.deletePuzzle(client, userid)
             if (puzzle === undefined) {
                 res.enforcer.status(404).send()
             } else {
@@ -80,16 +55,17 @@ module.exports = function (pool) {
 
         async updateIt(req, res){
             const data = req.enforcer.body
-            const { puzzleid } = req.enforcer.params
+          //  const { userid } = req.enforcer.params
+            const userid = req.user.id
 
             const client = await pool.connect()
 			try {
 				await client.query('BEGIN')
-				let puzzle = await puzzles.getPuzzle(client, puzzleid)
+				let puzzle = await puzzles.getPuzzle(client, userid)
 				if (puzzle === undefined) {
 					res.enforcer.status(404).send()
 				} else {
-					await puzzles.updatePuzzle(client, puzzleid, data)
+					await puzzles.updatePuzzle(client, userid, data)
 					res.enforcer.status(200).send({
                         puzzledifficulty: data.puzzledifficulty,
                         originalnumbers: data.originalnumbers,

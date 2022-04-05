@@ -73,40 +73,6 @@ module.exports = function (pool) {
 
 		async login (req, res) {
 			
-			// const { username, password } = req.enforcer.body
-		
-			// const salt = await bcrypt.genSalt(10)
-        	// let pasHash = await bcrypt.hash(password, salt)
-
-			// const userid = await accounts.getAccount(userid)
-			// const client = await pool.connect()
-			// try {
-			// 	await client.query('BEGIN')
-			// 	let account = await accounts.getAccountByUsername(client, username)
-			// 	if (account === undefined) {
-			// 		res.enforcer.status(404).send()
-			// 	} else if (pasHash !== account.password) {
-			// 		res.enforcer.status(403).send()
-			// 	} else {
-			// 		//start session
-			// 		res.enforcer.status(200).send()
-			// 	}
-			// 	await client.query('COMMIT')
-			// } catch (e) {
-			// 	await client.query('ROLLBACK')
-			// 	throw e
-			// } finally {
-			// 	client.release()
-			// }
-
-			// if (userid) {
-			// 	res.set('location', '/api/accounts/' + userid + '/login')
-			// 		.enforcer
-			// 		.status(201)
-			// 		.send()
-			// } else {
-			// 	res.enforcer.status(409).send()
-			// }
 		},
 
 		async logout (req, res) {
@@ -114,7 +80,18 @@ module.exports = function (pool) {
 		},
 
 		async getAccount (req,res){
-
+			const userid = req.user.id
+            const client = await pool.connect()
+            let account = await accounts.getAccount(client, userid)
+            if (account === undefined) {
+                res.enforcer.status(404).send()
+            } else {
+                res.enforcer.status(200).send({
+                    username: account.username,
+					firstname: account.firstname,
+					lastname: account.lastname
+                })
+            }
 		}
 	}
 }

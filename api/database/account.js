@@ -24,7 +24,7 @@ exports.getAccount = async function (client, userid) {
         text: 'SELECT * FROM accounts WHERE userid=$1',
         values: [userid]
     })
-    return rows
+    return rows[0]
 }
 
 exports.getAccountByUsername = async function (client, username) {

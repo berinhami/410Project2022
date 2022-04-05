@@ -43,10 +43,6 @@ paths:
           description: Invalid Request
         409:
           description: Account Already Exists
-  /accounts/{username}:
-    x-controller: accounts
-    parameters:
-      - $ref: '#/components/parameters/PathUsername'
     get:
       x-operation: getAccount
       tags:
@@ -63,6 +59,26 @@ paths:
           description: Not authenticated
         403:
           description: Also not authenticated
+  /accounts/{username}:
+    x-controller: accounts
+    parameters:
+      - $ref: '#/components/parameters/PathUsername'
+    # get:
+    #   x-operation: getAccount
+    #   tags:
+    #     - Accounts
+    #   summary: Gets an account
+    #   responses:
+    #     200:
+    #       description: Got Account
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: '#/components/schemas/Account'
+    #     401:
+    #       description: Not authenticated
+    #     403:
+    #       description: Also not authenticated
     patch:
       x-operation: updateAccount
       tags:
@@ -206,10 +222,6 @@ paths:
           description: Invalid request.
         401:
           description: Not authenticated.
-  /puzzles/{puzzleid}:
-    x-controller: puzzles
-    parameters:
-      - $ref: '#/components/parameters/PathPuzzleId'
     patch:
       x-operation: updateIt
       tags:
@@ -281,10 +293,10 @@ paths:
           description: access denied
         404:
           description: puzzle not found
-  /puzzles/{puzzleid}/cells/{cellid}:
+  /puzzles/{userid}/cells/{cellid}:
     x-controller: puzzles
     parameters:
-      - $ref: '#/components/parameters/PathPuzzleId'
+      - $ref: '#/components/parameters/PathUserId'
       - $ref: '#/components/parameters/PathCellId'
     put:
       x-operation: updatePuzzle
@@ -346,8 +358,8 @@ components:
       required: true
       schema:
         type: string
-    PathPuzzleId:
-      name: puzzleid
+    PathUserId:
+      name: userid
       in: path
       required: true
       schema:

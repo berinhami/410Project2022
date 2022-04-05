@@ -9,14 +9,43 @@ export const state = () => {
 //         return state.sudokuPuzzles.filter(sudoku.done)
 //     }
 // }
+// export const getters = {
+//     isAuthenticated (state) {
+//         return state.user !== null
+//     }
+// }
 
 export const mutations = {
     setUser (state, user) {
         state.user = user
+    },
+    setAccount(state, account){
+        state.account = account
     }
 }
 
 export const actions = {
+
+    async createAccount({ commit }, {username, firstname, lastname, password }){
+        try{
+            const res = await this.$axios.post('/api/accounts', {
+                username,
+                firstname,
+                lastname,
+                password
+            })
+            return 'created'
+
+        } catch (e){
+            const status = e.response.status
+            if (status === 409){
+                return 'conflict'
+            }else{
+                return 'failed'
+            }
+        }
+    },
+
     async login ({ commit, state }, { username, password }) {
       //  console.log('this is working')
         const res = await this.$axios.put('/api/authentication/login', {
@@ -32,6 +61,45 @@ export const actions = {
         const res = await this.$axios.put('/api/authentication/logout')
         if (res.status === 200) {
             commit('setUser', null)
+        }
+    },
+
+    async updateAccount({commit}, {username, firstname, lastname, password}){
+        try{
+            const res = await this.$axios.patch('/api/accounts', {
+                username,
+                firstname,
+                lastname,
+                password
+            })
+            return 'updated'
+
+        } catch (e){
+            const status = e.response.status
+            if (status === 409){
+                return 'conflict'
+            }else{
+                return 'failed'
+            }
+        }
+    },
+
+    async getAccount(){
+        console.log('getting account')
+        
+        try{
+            const res = await this.$axios.get('/api/accounts')
+            if (res.status === 200) {
+                commit('setAccount', res.data)
+            }
+        }
+        catch(e){
+            const status = e.response.status
+            if (status === 409){
+                return 'conflict'
+            }else{
+                return 'failed'
+            }
         }
     }
 }

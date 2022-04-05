@@ -1,30 +1,25 @@
 <template>
-    <div>
+    <div style="font-family: 'Nunito', sans-serif">
         <v-row justify="center" align="center">
-            <v-col cols="12" sm="8" md="6">
-                <v-card elevation="5">
-                    <v-card-title justify="center">
-                        <h1>Login</h1>
+            <v-col cols="12" sm="6" md="6">
+                <v-card elevation="5" class="mt-16">
+                    <v-card-title justify="center" class="justify-center">
+                        <h1>Welcome to Sudoku!</h1>
                     </v-card-title>
                     <v-card-text justify="center">
-                        <v-text-field v-model="loginForm.username" lable="username" required />
-                        <v-text-field v-model="loginForm.password" type="password" lable="password" required />
-                        <v-btn @click="login()">Login</v-btn>
-                        <v-btn @click="logout()">LogOut</v-btn>
+                        <v-btn class="mt-5" width="100%" color="#F4BC3B" @click.native="$router.push('/login')">Login</v-btn>
+                        
+                        <v-btn class="mt-5" width="100%" color="#F4BC3B" @click.native="$router.push('/signup')">Create an Account</v-btn>
                     </v-card-text>
                 </v-card>
             </v-col>
         </v-row>
-        <div v-if="user == null">
-          Logged out!
-        </div>
-        <div v-if="user !== null">
-          Logged in as {{user}}
-        </div>
+      
     </div>
 </template>
 
 <script>
+
 export default {
   name: 'LoginPage',
   data () {
@@ -35,23 +30,7 @@ export default {
       }
     }
   },
-  methods: {
-    login () {
-      this.$store.dispatch('accounts/login', {
-        username: this.loginForm.username,
-        password: this.loginForm.password
-      })
-      .then(() => {
-          this.$router.push('/home')
-      })
-      .catch(() => {
-          console.error("Login Failed")
-      })
-    },
-    logout () {
-      this.$store.dispatch('accounts/logout')
-    }
-  },
+
   computed: {
     user () {
       return this.$store.state.accounts.user
