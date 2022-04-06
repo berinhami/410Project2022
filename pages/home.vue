@@ -350,9 +350,6 @@ export default {
           setToMe = 0
         }
         origNums[theCell] = setToMe; 
-        userNums[theCell] = setToMe;
-
-       
       }
       console.log(origNums)
 
@@ -394,8 +391,8 @@ export default {
       let completed = false
       console.log(cell.index, value)
 
-      this.$store.dispatch("sudoku/updatePuzzle", {
-        diff: diff,
+      this.$store.dispatch("sudoku/updateIt", {
+        puzzledifficulty: diff,
         cell: cell.index,
         value: value,
         completed: completed

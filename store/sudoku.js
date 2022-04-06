@@ -32,7 +32,7 @@ export const mutations = {
     },
     setCell(state, data){
         const puzzle = state.puzzle.slice()
-        puzzle[data.index].value = parseInt(data.value)
+        puzzle[data.cell].value = parseInt(data.value)
         state.puzzle = puzzle
     }
 
@@ -96,18 +96,34 @@ export const actions = {
         }
     },
 
-    async updatePuzzle({commit, state}, {diff, cell, value, completed}){
-        debugger
-       
+    async updateIt({commit, state}, {puzzledifficulty, cell, value, completed}){
+        let data = {cell, value}
         try{
-            commit('setCell', cell, value)
+            commit('setCell', data)
             let newPuzzle = state.puzzle
-            // const res = await this.$axios.patch('/api/puzzles', {
-            //     diff, 
-            //     newPuzzle, 
-            //     newPuzzle, 
-            //     completed
-            // })
+            let originalnumbers = [
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0,
+            ];
+            let userenterednumbers = [
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0,
+            ];
+            for(let o = 0; o < 81; o++){
+                originalnumbers[o] = newPuzzle[o].value
+                userenterednumbers[o] = newPuzzle[o].value
+            }
+            
+            const res = await this.$axios.patch('/api/puzzles', {
+                puzzledifficulty, 
+                originalnumbers, 
+                userenterednumbers, 
+                completed
+            })
             if (res.status === 200) {
                return 'updated'
             }

@@ -36,10 +36,6 @@ module.exports = function (pool) {
             }
         },
         
-        async updatePuzzle (req, res) {
-
-        },
-        
         async deletePuzzle (req, res) {
            // const { userid } = req.enforcer.params
             const userid = req.user.id

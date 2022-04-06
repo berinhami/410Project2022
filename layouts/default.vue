@@ -36,7 +36,7 @@
               <v-text-field v-model="updateForm.username" label="username" required />
               <v-text-field v-model="updateForm.password" type="Password" label="Password" required />
               <v-btn color="#F4BC3B"  type="submit">Update Account</v-btn>
-              <v-btn color="#F4BC3B"  @click="getAccount()">Get Account Info</v-btn>
+              <v-btn color="#F4BC3B" class="mt-3" @click="getAccount()">Get Account Info</v-btn>
             </form>
           </v-list-item-content>
         </v-list-item>
