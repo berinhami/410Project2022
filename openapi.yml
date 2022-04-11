@@ -236,10 +236,16 @@ paths:
             schema:
               type: object
               properties:
-                userenterednumbers:
+                # puzzledifficulty:
+                #   type: integer
+                originalnumbers:
                   type: array
                   items:
                     type: integer
+                # userenterednumbers:
+                #   type: array
+                #   items:
+                #     type: integer
                 completed:
                   type: boolean 
       responses:
@@ -248,7 +254,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Puzzle'
+                $ref: '#/components/schemas/changePuzzle'
         400:
           description: Invalid request
         401:
@@ -366,6 +372,17 @@ components:
           items:
             type: integer
         userenterednumbers:
+          type: array
+          items:
+            type: integer
+        completed:
+          type: boolean 
+    changePuzzle:
+      type: object
+      properties:
+        puzzledifficulty:
+          type: integer
+        originalnumbers:
           type: array
           items:
             type: integer

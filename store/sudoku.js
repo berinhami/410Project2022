@@ -21,21 +21,24 @@ export const mutations = {
     },
     
     setPuzzle(state, puzzle){
+       
         state.puzzle = puzzle.originalnumbers.map((value, index) => {
             return {
                 index,
                 original: value,
-                value: value ?? puzzle.userenterednumbers[index],
-                iswritable: value===0
+                value: value && puzzle.userenterednumbers[index],
+                iswritable: value===0,
+                answer: puzzle.userenterednumbers[index],
+                isDone: puzzle.completed
             }
         })
     },
+
     setCell(state, data){
         const puzzle = state.puzzle.slice()
         puzzle[data.cell].value = parseInt(data.value)
         state.puzzle = puzzle
     }
-
 }
 
 export const actions = {
@@ -62,6 +65,7 @@ export const actions = {
     },
 
     async getPuzzle ({ commit, state}) {
+      
         console.log('sudoku get puzzle')
         try{
             const res = await this.$axios.get('/api/puzzles')
@@ -78,6 +82,7 @@ export const actions = {
             }
         }
     },
+
 
     async deletePuzzle({comit, state}) {
         try{
@@ -96,9 +101,10 @@ export const actions = {
         }
     },
 
-    async updateIt({commit, state}, {puzzledifficulty, cell, value, completed}){
+    async updateIt({commit, state}, {cell, value}){
         let data = {cell, value}
         try{
+       
             commit('setCell', data)
             let newPuzzle = state.puzzle
             let originalnumbers = [
@@ -107,26 +113,42 @@ export const actions = {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0,
             ];
-            let userenterednumbers = [
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0,
-            ];
+            
             for(let o = 0; o < 81; o++){
                 originalnumbers[o] = newPuzzle[o].value
-                userenterednumbers[o] = newPuzzle[o].value
+            }
+
+            // //check if the puzzle is done
+            let itis = true
+            let itisnot = false
+            let completed = itis
+
+            for(let o = 0; o < 81; o++){
+                if (originalnumbers[o] === 0){
+                    completed = itisnot
+                    //break
+                }
+                
             }
             
-            const res = await this.$axios.patch('/api/puzzles', {
-                puzzledifficulty, 
-                originalnumbers, 
-                userenterednumbers, 
-                completed
-            })
-            if (res.status === 200) {
-               return 'updated'
-            }
+            // if(completed === itisnot){
+                const res = await this.$axios.patch('/api/puzzles', {
+                  //  puzzledifficulty, 
+                    originalnumbers, 
+                    completed
+                })
+                if (res.status === 200) {
+                    return 'updated'
+                }
+                // if(completed === itis){
+                //     const res = await this.$axios.delete('/api/puzzles')
+                //     if (res.status === 200) {
+                //         return 'deleted'
+                //     }
+                // }
+             //if completed is true, delet puzzle. 
+             //if no puzzle exists, say congrats, start a new puzzle 
+          
         }
         catch(e){
             const status = e.response.status
@@ -137,7 +159,6 @@ export const actions = {
             }
         }
     }
-
     
 }
 //james.speirs@gmail.com

@@ -5,7 +5,7 @@
         <v-row justify="center" align="center">
             <v-col cols="12" sm="8" md="5">
                 <v-card elevation="8" style="font-family: 'Questrial', sans-serif">
-                    <v-card-title justify="center">
+                    <v-card-title>
                         <h1>Sign Up.</h1>
                     </v-card-title>
                     <v-card-text justify="center">
@@ -24,7 +24,7 @@
 
 <script>
 export default {
-  name: 'Create Account Page',
+  name: 'CreateAccountPage',
   data () {
     return {
       signupForm: {

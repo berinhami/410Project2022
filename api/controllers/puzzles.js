@@ -63,9 +63,9 @@ module.exports = function (pool) {
 				} else {
 					await puzzles.updatePuzzle(client, userid, data)
 					res.enforcer.status(200).send({
-                        puzzledifficulty: data.puzzledifficulty,
+                      //  puzzledifficulty: data.puzzledifficulty,
                         originalnumbers: data.originalnumbers,
-                        userenterednumbers: data.userenterednumbers,
+                      //  userenterednumbers: data.userenterednumbers,
                         completed: data.completed
 					})
 				}

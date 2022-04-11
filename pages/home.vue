@@ -2,28 +2,45 @@
     <div style="font-family: 'Questrial', sans-serif">
       <br />
       <br />
-      <div>   
-        <v-row justify="left" align="left">
+      <div>  
+        <v-row v-if="puzzle.length <= 0" justify="center" align="center"> 
+          <v-col md="8">
+            <v-card color="#121212" elevation="0">
+              <div style="text-align: center">
+              <h1 style="font-size:40px">Let's Play Sudoku! </h1>
+              </div>
+              <p class="ms-3 mt-5" style="font-size:20px">Here are the rules:</p>
+              <p class="ms-3" style="font-size:20px">1. Each row in a grid must contain a number 1-9, each row must not have any repeat numbers</p>
+              <p class="ms-3" style="font-size:20px">2. Each column in a grid must contain a number 1-9, each column must not have any repeat numbers</p>
+              <p class="ms-3" style="font-size:20px">3. Each box in a grid must contain a number 1-9, each box must not have any repeat numbers</p>
+              <div style="text-align: center">
+                <v-btn class="mt-3" color="#F4BC3B" width="55%" @click="createPuzzle()"
+                    >Click Me to Start Playing!</v-btn
+                >
+              </div>
+            </v-card>
+          </v-col>
+          
+        </v-row> 
+        <v-row v-if="puzzle.length > 0">
           <v-col cols="12" sm="8" md="5">
             <v-card class="mt-5" elevation="0" color="#121212">
               <v-card-title class="justify-center">
-                <h1>App in progress..</h1>
+                <!-- <h1>App in progress..</h1>
                 <br>
                 <br>
-                <v-btn class="ms-5" color="#F4BC3B" @click="createPuzzle()"
-                  >Start a Puzzle</v-btn
+
+                <v-btn class="mt-5 ms-5" color="#F4BC3B" width="100%" @click="createPuzzle()"
+                  >Create Puzzle</v-btn
                 >
-                <v-btn class="ms-5" color="#F4BC3B" @click="getPuzzle()"
+                <v-btn class="mt-5 ms-5" color="#F4BC3B" width="100%" @click="getPuzzle()"
                   >Resume Puzzle</v-btn
-                >
-                <v-btn class="mt-5 ms-5" color="#F4BC3B" @click="deletePuzzle()"
-                  >Delete Puzzle</v-btn
-                >
-                <v-btn class="mt-5 ms-5" color="#F4BC3B" @click="resetPuzzle()"
-                  >Restart Puzzle</v-btn
-                >
-                <v-btn class="mt-5 ms-5" color="#F4BC3B" @click="checkPuzzle()"
+                > -->
+                <v-btn class="mt-5 ms-5" color="#F4BC3B" width="100%" @click="deletePuzzle(); createPuzzle()"
                   >Submit Puzzle</v-btn
+                >
+                <v-btn class="mt-5 ms-5" color="#F4BC3B" width="100%" @click="deletePuzzle()"
+                  >Delete Puzzle</v-btn
                 >
                 
               </v-card-title>
@@ -42,13 +59,14 @@
             <v-card 
                 v-for="cell in puzzle"
                 :key="cell.index"
-                :class="(cell.index % 9 === 2 && 'mr-1') || (cell.index % 9 === 5 && 'mr-1') || ((cell.index >= 18 && cell.index < 27) && 'mb-1') || ((cell.index >= 48 && cell.index < 54) && 'mb-1')"
+                :class="( (cell.index % 9 === 2 && 'mr-1') || (cell.index % 9 === 5 && 'mr-1') || ((cell.index >= 18 && cell.index < 27) && 'mb-1') || ((cell.index >= 48 && cell.index < 54) && 'mb-1'))"
                 class="pa-5"
                 outlined
                 tile
                 style="text-align: center"
                 width="55"
                 height="55"
+                
               >
                 <!-- output the value or an input box need to call a function which returns orig nums -->
                 <v-text-field v-if="cell.iswritable"
@@ -56,6 +74,7 @@
                   dense
                   @input="updateCell(cell, $event)"
                 ></v-text-field>
+              
                 
                 <div class="mt-n1" v-else>
                   <span >
@@ -80,6 +99,9 @@ export default {
       myNumber: 0,
     };
   },
+  middleware:[
+    "init"
+  ],
   methods: {
     logout() {
       this.$store
@@ -92,10 +114,22 @@ export default {
         });
     },
     createPuzzle() {
-      
-      const puzzleDiff = 20;
+
+      //delete any existing puzzles
+    
+      // this.$store.dispatch("sudoku/deletePuzzle")
+      // .then(() => {
+      //     console.error("Puzzle Deletion Sent");
+      //   })
+      //   .catch(() => {
+      //     console.error("Puzzle Deletion Failed");
+      //   });
+
+      //start building new puzzle
+      const puzzleDiff = 30;
       const amtOfCells = 81;
-      const cellsFilled = amtOfCells - puzzleDiff;
+      let anotherOne = 0;
+      let skipMe = 82
       let origNums = [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -110,9 +144,8 @@ export default {
       ];
      
       for (let i = 0; i < amtOfCells; i++) {
-
+        if(skipMe != i){
         let possibleNums = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-        //let theCell = Math.floor(Math.random() * 80);
         let theCell = i
 
         //check numbers in the same row
@@ -165,19 +198,6 @@ export default {
           }
         }
 
-        //if a row has an empty spot(possibleNums[]) then restart the whole row
-        // let checkMePlease = possibleNums.length 
-      
-        // if(checkMePlease === 0){
-        //   for(let m = checkLow; m < checkHigh; m++){
-        //     origNums[m] = 0
-        //   }
-        //   possibleNums=[1,2,3,4,5,6,7,8,9]
-        //   let startHere = checkLow - 1
-        //   i = startHere
-        // }
-
-
         //check to see if number is in the same box
         
         let b1 = 0
@@ -198,7 +218,7 @@ export default {
             p2 = 12
             p3 = 21
           }
-          else if(theCell < 49){
+          else if(theCell < 48){
             b1 = 27
             b2 = 36
             b3 = 45
@@ -207,7 +227,7 @@ export default {
             p2 = 39
             p3 = 48
           }
-          else if(theCell < 76){
+          else if(theCell < 75){
             b1 = 54
             b2 = 63
             b3 = 72 
@@ -301,9 +321,13 @@ export default {
           }
         }
 
-        //for the conflicts
+        //check for conflicts
+
+        //maybe reset to the start of the row
         let checkMePlease = possibleNums.length 
-        if(checkMePlease === 0){
+        anotherOne = anotherOne + 1
+        //and if cell is not the one that was stored earlier???
+        if(checkMePlease === 0 ){
           for(let m = checkLow; m < checkHigh; m++){
             origNums[m] = 0
           }
@@ -331,41 +355,92 @@ export default {
             if(possibleNums.includes(checkThis)){
               possibleNums = possibleNums.filter((n) => {
                   return n !== checkThis;
-                });
+              });
             }
           }
           console.log(possibleNums)
-          //refill the row
+
+          //check for colomn again
+          for (let j = startingCell; j < 81; j = j + 9) {
+            let checkThis = origNums[j];
+            if(possibleNums.includes(checkThis)){
+              possibleNums = possibleNums.filter((n) => {
+                  return n !== checkThis;
+                });
+            }
+          }
+
           let startHere = checkLow - 1
+
+          let checkMeAgain = possibleNums.length 
+          if(checkMeAgain === 0){
+            for(let m = b1; m < p3; m++){
+              origNums[m] = 0
+            }
+            possibleNums=[1,2,3,4,5,6,7,8,9]
+            startHere = b1 - 1
+          }
+  
+          //refill the row
+          
           i = startHere
+          skipMe = theCell
+          //save the cell of the number that is going to be stored(backto line 310)
         }
 
         //start putting a number in the cell
         let sizeOfArray = possibleNums.length
+        
         let numberToBe = Math.floor(Math.random() * sizeOfArray);
         let setToMe = possibleNums[numberToBe];
+
+        // if(sizeOfArray === 0){
+        //   setToMe = 0
+        // }
+        origNums[theCell] = setToMe; 
+        userNums[theCell] = setToMe;
+        
+       // console.log(origNums)
         
 
-        if(sizeOfArray === 0){
-          setToMe = 0
+        //check for the colomn again
+        
+        // if(anotherOne >= 20 ){
+        //   for(let m = b1; m < b3; m++){
+        //     origNums[m] = 0
+        //   }
+        //   possibleNums=[1,2,3,4,5,6,7,8,9]
+        //   i = b1
+        //  anotherOne = 0
+        // }
         }
-        origNums[theCell] = setToMe; 
       }
       console.log(origNums)
 
       //delete some numbers and save to userentered numbers
+      let removeMe = Math.floor(Math.random() * 80);
+      let RM = removeMe
       for(let d = 0; d < puzzleDiff; d++){
-        let removeMe = Math.floor(Math.random() * 80);
+     
+        removeMe = Math.floor(Math.random() * 80);
+        while(removeMe === RM){
+          removeMe = Math.floor(Math.random() * 80);
+        }
+
         origNums[removeMe] = 0
-        
+        RM = removeMe
+      
+         
       }
+      let comp = false 
 
       //Done creating puzzle, send it to the database
+     
       this.$store.dispatch("sudoku/createPuzzle", {
           puzzledifficulty: puzzleDiff,
           originalnumbers: origNums,
           userenterednumbers: userNums,
-          completed: false,
+          completed: comp,
         })
         .then(() => {
           this.$store.dispatch("sudoku/getPuzzle"); 
@@ -374,46 +449,59 @@ export default {
         .catch(() => {
           console.error("Puzzle Creation Failed");
         });
+      
     },
 
     getPuzzle() {
-      //console.log('get puzzle')
       this.$store.dispatch("sudoku/getPuzzle"); 
     },
 
     deletePuzzle() {
-      this.$store.dispatch("sudoku/deletePuzzle");
-      window.location.reload();
+      this.$store.dispatch("sudoku/deletePuzzle")
+      .then(() => {
+ 
+          console.error("Puzzle Deletion Sent");
+        })
+        .catch(() => {
+          console.error("Puzzle Deletion Failed");
+        });
+     // window.location.reload();
     },
 
     updateCell(cell, value) {
-      let diff = 20
-      let completed = false
+
       console.log(cell.index, value)
-
-      this.$store.dispatch("sudoku/updateIt", {
-        puzzledifficulty: diff,
-        cell: cell.index,
-        value: value,
-        completed: completed
-      })
-
-      // cycle thru puzzle and add values
-      // use dispatch to send it to the database
-      // send in puzzle difficulty, puzzle, completed
-    },
-
-    resetPuzzle(){
-      //set puzzle original 
-      console.log("reset me")
-    },
-
-    checkPuzzle(){
-      //see if origNums match usernums
-    },
-
-    getAccount(){
       
+      let numericalValue = parseInt(value)
+      console.log(numericalValue)
+      let backup = 0
+
+      if(numericalValue === cell.answer){
+        this.$store.dispatch("sudoku/updateIt", {
+          cell: cell.index,
+          value: value,   
+        }) 
+        .then(() => {
+          this.$store.dispatch("sudoku/getPuzzle"); 
+          console.log(cell.isDone)
+        })
+        .catch(() => {
+          console.error("Puzzle Creation Failed");
+        });
+      }
+      else{
+        this.$store.dispatch("sudoku/updateIt", {
+
+          cell: cell.index,
+          value: backup,
+  
+        })
+      }
+      
+    },
+
+    updateAccount({params, store}){
+      this.$store.dispatch('sudoku/updateAccount', params.index)
     }
   },
   computed: {
@@ -423,6 +511,7 @@ export default {
     puzzle() {
       return this.$store.state.sudoku.puzzle;
     },
+   
   },
 };
 </script>

@@ -20,6 +20,7 @@ export const mutations = {
         state.user = user
     },
     setAccount(state, account){
+        debugger
         state.account = account
     }
 }
@@ -55,6 +56,11 @@ export const actions = {
         if (res.status === 200) {
             commit('setUser', getUserFromCookie())
         }
+        // const re = await this.$axios.get('/api/accounts')
+        // debugger
+        //     if (re.status === 200) {
+        //         commit('setAccount', re.data)
+        //     }
     },
 
     async logout ({ commit }) {
@@ -65,14 +71,19 @@ export const actions = {
     },
 
     async updateAccount({commit}, {username, firstname, lastname, password}){
+        let ogUser = getUserFromCookie()
+        ogUser = ogUser.substring(1, (ogUser.length - 1))
+        debugger
         try{
-            const res = await this.$axios.patch('/api/accounts', {
+            const res = await this.$axios.patch(`/api/accounts/${ogUser}`, {
                 username,
                 firstname,
                 lastname,
                 password
             })
-            return 'updated'
+            if(res.status === 200){
+                commit('setUser', res.username)
+            }
 
         } catch (e){
             const status = e.response.status
@@ -84,9 +95,9 @@ export const actions = {
         }
     },
 
-    async getAccount(){
+    async getAccount({ commit, state}){
+        debugger
         console.log('getting account')
-        
         try{
             const res = await this.$axios.get('/api/accounts')
             if (res.status === 200) {

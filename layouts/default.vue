@@ -27,17 +27,31 @@
       </v-list> -->
       <div  class="ms-1 mt-4" v-if="user !== null">
         <v-list-item>
-          <v-list-item-content>
-            Account for {{user}}
+          <v-list-item-content >
+<!--             
+            <h1 style="font-size:35px">My Account.</h1> -->
+            
+            <!-- <p class="mt-6" style="font-size:20px">First Name: {{account.firstname}}</p>
+            <v-divider></v-divider>
+            <p class="mt-4" style="font-size:20px">Last Name: {{account.lastname}}</p>
+            <v-divider></v-divider>
+            <p class="mt-4" style="font-size:20px">Username: {{account.username}}</p> -->
+            <v-divider></v-divider>
+
             <v-spacer />
-            <form @submit.prevent="updateAccount()">
+            <v-btn color="#363636" class="mt-3" elevation="0" width="100%" @click.native="$router.push('/home')">My Home Page</v-btn>
+            <v-btn color="#363636" class="mt-3" elevation="0" width="100%" @click.native="$router.push('/account')">My Account</v-btn>
+            <v-btn color="#363636" class="mt-3" elevation="0" width="100%"  @click.native="logout()">Logout</v-btn>
+        
+            <!-- <form @submit.prevent="updateAccount()">
               <v-text-field v-model="updateForm.firstname" label="First Name" required />
               <v-text-field v-model="updateForm.lastname" label="Last Name" required />
               <v-text-field v-model="updateForm.username" label="username" required />
               <v-text-field v-model="updateForm.password" type="Password" label="Password" required />
               <v-btn color="#F4BC3B"  type="submit">Update Account</v-btn>
-              <v-btn color="#F4BC3B" class="mt-3" @click="getAccount()">Get Account Info</v-btn>
-            </form>
+             <v-btn color="#F4BC3B" class="mt-3" @click="getAccount()">Get Account Info</v-btn> 
+             <v-btn color="#363636" elevation="0" width="100%" @click.native="$router.push('/account')">My Account</v-btn>
+            </form> --> 
           </v-list-item-content>
         </v-list-item>
 
@@ -45,7 +59,7 @@
       <div class="ms-1 mt-4" v-if="user === null">
         <v-list-item>
           <v-list-item-content>
-            <v-btn color="#363636" elevation="0" width="100%" @click.native="$router.push('/login')"> Back to Log In</v-btn>
+            <v-btn color="#363636" elevation="0" width="100%" @click.native="$router.push('/login')">Sign In</v-btn>
           </v-list-item-content>
         </v-list-item>
 
@@ -65,8 +79,8 @@
      
       <!-- <v-btn class="mx-2 ma-2" color="#F9FDF8" @click.native="$router.push('/account')">Account</v-btn> -->
       <v-spacer />
-
-      <v-btn color="#F4BC3B" v-if="user !== null"  @click.native="logout()">Logout</v-btn>
+<!-- 
+      <v-btn color="#F4BC3B" v-if="user !== null"  @click.native="logout()">Logout</v-btn> -->
       
     </v-app-bar>
     
@@ -149,9 +163,13 @@ export default {
         lastname: this.updateForm.lastname,
         password: this.updateForm.password
       })
+
     },
     getAccount(){
+      const user = this.$store.state.accounts.user
       this.$store.dispatch('accounts/getAccount')
+      debugger
+      console.log(account)
     }
   },
   computed: {

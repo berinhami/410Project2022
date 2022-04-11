@@ -9,7 +9,7 @@ module.exports = function (passport) {
                 // Tell the browser to set an extra cookie. This cookie
                 // is not secure, but it can help the UI to determine
                 // if the user is logged in or not.
-                res.cookie('user', JSON.stringify(req.user.firstname), {
+                res.cookie('user', JSON.stringify(req.user.username), {
                     maxAge: 36000000 // expires in 10 hours
                 })
 

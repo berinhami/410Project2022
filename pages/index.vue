@@ -21,7 +21,7 @@
 <script>
 
 export default {
-  name: 'LoginPage',
+  name: 'IndexPage',
   data () {
     return {
       loginForm: {
@@ -30,7 +30,9 @@ export default {
       }
     }
   },
-
+  middleware:[
+    "auth"
+  ],
   computed: {
     user () {
       return this.$store.state.accounts.user

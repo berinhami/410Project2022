@@ -12,7 +12,7 @@
         <br>
         <br>
         <br>
-        <v-row justify="left" align="left">
+        <v-row >
           <v-col cols="12" sm="10" md="6">
                 <v-card class="mt-16 ml-3 pt-7" elevation="0" color="#121212">
                     <v-card-title class="justify-left">

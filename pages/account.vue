@@ -1,96 +1,80 @@
 <template>
-  <div>
-    <h1>{{ title }}</h1>
-    <form @submit.prevent="submit()">
-      <v-text-field label="First Name" v-model="name" outlined dense></v-text-field>
-      <v-text-field label="Username" v-model="username" outlined dense></v-text-field>
-      <v-text-field label="Password" type="password" v-model="password" outlined dense></v-text-field>
-      <div class="right">
-        <v-btn @click="reset()">Reset</v-btn>
-        <v-btn color="primary" type="submit">Sumbit</v-btn>
-      </div>
-    </form>
-  </div>
+    <div style="font-family: 'Questrial', sans-serif">
+      <br>
+      <br>
+        <v-row justify="center" align="center">
+            <v-col cols="12" sm="8" md="5">
+                <v-card elevation="8" style="font-family: 'Questrial', sans-serif">
+                    <v-card-title justify="center" >
+                        <h1>Update Account Info.</h1>
+                    </v-card-title>
+                    <v-card-text justify="center">
+                      
+                        <v-text-field v-model="updateForm.firstname" :label="account.firstname" required />
+                        <v-text-field v-model="updateForm.lastname" :label="account.lastname" required />
+                        <v-text-field v-model="updateForm.username" :label="account.username" required />
+                        <v-text-field v-model="updateForm.password" type="Password" label="password" required />
+  
+                        <v-btn width="100%" color="#F4BC3B" @click="updateAccount()">Update Account</v-btn>
+                    </v-card-text>
+                </v-card>
+            </v-col>
+        </v-row>
+    </div>
 </template>
 
 <script>
 export default {
-  name: 'Hello',
+  name: 'AccountPage',
   data () {
-    const user = this.$store.state.accounts.user
-    return user === null
-      ? {
-        title: 'Create a New Account',
-        name: '',
-        username: '',
-        password: ''
-      }
-      : {
-        title: 'Update your Account',
-        name: user.name,
-        username: user.username,
-        password: ''
-      }
-  },
-  methods: {
-    reset () {
-      this.name = ''
-      this.username = ''
-      this.password = ''
-    },
-    async submit () {
-      if (this.readyToSubmit) {
-        const success = await this.$store.dispatch('accounts/createAccount', {
-          name: this.name,
-          username: this.username,
-          password: this.password
-        })
-        if (success === 'created') {
-            this.$store.dispatch('alerts/set', {
-                close: true,
-                color: 'success',
-                duration: 5000,
-                text: 'Account created. Please log in.'
-            })
-            this.$router.push('/login')
-        } else if (success === 'conflict') {
-          this.$store.dispatch('alerts/set', {
-              close: true,
-              color: 'error',
-              duration: 5000,
-              text: 'Account with username already exists.'
-          })
-        } else if (success === 'failed') {
-          this.$store.dispatch('alerts/set', {
-              close: true,
-              color: 'error',
-              duration: 5000,
-              text: 'Account creation failed.'
-          })
-        }
-      } else {
-        this.$store.dispatch('alerts/set', {
-          color: 'error',
-          duration: 8000,
-          text: 'Please fill out the entire form before submitting.'
-        })
+    return {
+      updateForm: {
+          username: '',
+          firstname: '',
+          lastname: '',
+          password: ''
       }
     }
   },
+  middleware:[
+    "alsoinit"
+  ],
+  methods: {
+   updateAccount() {
+      //const user = this.$store.state.accounts.user
+      this.$store.dispatch('accounts/updateAccount', {
+        username: this.updateForm.username,
+        firstname: this.updateForm.firstname,
+        lastname: this.updateForm.lastname,
+        password: this.updateForm.password
+      })
+      .then(() => {
+          this.$store.dispatch('accounts/getAccount'); 
+          console.error("Account Update Sent");
+          window.location.reload();
+        })
+        .catch(() => {
+          console.error("Account Update Failed");
+        });
+
+    },
+    getAccount(){
+      const user = this.$store.state.accounts.user
+      this.$store.dispatch('accounts/getAccount')
+      debugger
+      console.log(user)
+    }
+  },
   computed: {
-    readyToSubmit () {
-      return this.name !== '' && this.username !== '' && this.password !== ''
+    user(){
+      return this.$store.state.accounts.user
+    },
+    account(){
+      return this.$store.state.accounts.account
     }
   }
 }
 </script>
-
-<style scoped>
-  .container > div {
-    max-width: 500px;
-    margin: 0 auto;
-  }
-  .right {
-    text-align: right;
-  }
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
 </style>

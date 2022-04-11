@@ -42,7 +42,7 @@ exports.deletePuzzle = async function (client, userid) {
 }
 
 exports.updatePuzzle = async function (client, userid, data){
-    const { puzzledifficulty, originalnumbers, userenterednumbers, completed} = data
+    const {originalnumbers, completed} = data
     const values = []
     const sets = []
 
@@ -51,10 +51,10 @@ exports.updatePuzzle = async function (client, userid, data){
         sets.push('originalnumbers=$' + values.length)
     }
 
-    if (userenterednumbers !== undefined) {
-        values.push(userenterednumbers)
-        sets.push('userenterednumbers=$' + values.length)
-    } 
+    // if (userenterednumbers !== undefined) {
+    //     values.push(userenterednumbers)
+    //     sets.push('userenterednumbers=$' + values.length)
+    // } 
 
     if (completed !== undefined) {
         values.push(completed)
@@ -70,7 +70,7 @@ exports.updatePuzzle = async function (client, userid, data){
         text: 'UPDATE puzzles SET ' + sets.join(', ') + ' WHERE userid=$' + (values.length) + ' RETURNING *',
         values: [
             JSON.stringify(originalnumbers),
-            JSON.stringify(userenterednumbers),
+         //   JSON.stringify(userenterednumbers),
             completed,
             userid
         ]
